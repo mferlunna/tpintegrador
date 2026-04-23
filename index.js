@@ -17,7 +17,7 @@ app.post("/especialidades", (req, res) => {
 
 })
 
-//process.loadEnvFile();
+process.loadEnvFile();
 const PUERTO = process.env.PUERTO;
 
 app.listen(PUERTO || 3000, () => {
