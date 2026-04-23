@@ -1,0 +1,15 @@
+{
+  "name": "clinica",
+  "version": "1.0.0",
+  "description": "sitio web y aplicacion para clinica medica",
+  "license": "ISC",
+  "author": "Luna Maria Fernanda, Gimenez Cristian, Herrera Rita, Rodeiro Noelia, De Bueno David, Diaz Francisco",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
