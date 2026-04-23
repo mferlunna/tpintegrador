@@ -1,8 +1,10 @@
-// console.log("clinica");
+console.log("clinica");
 
 import express from "express";
 
 const app = express();
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
     console.log("test get");
@@ -10,6 +12,14 @@ app.get("/", (req, res) => {
     res.send({ estado: "ok", msg: "API OK" });
 });
 
-app.listen(3000, () => {
-    console.log ("servidor iniciado OK en puerto 3000");
+app.post("/especialidades", (req, res) => {
+    res.send({ estado: "ok", msg: "creado" });
+
+})
+
+//process.loadEnvFile();
+const PUERTO = process.env.PUERTO;
+
+app.listen(PUERTO || 3000, () => {
+    console.log (`servidor iniciado OK en puerto ${PUERTO || 3000}`);
 })
