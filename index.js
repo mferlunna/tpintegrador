@@ -6,7 +6,8 @@ const app = express();
 
 app.get("/", (req, res) => {
     console.log("test get");
-    res.status(200).send({ estado: "ok", msg: "API OK" });
+    //res.status(200).send({ estado: "ok", msg: "API OK" });
+    res.send({ estado: "ok", msg: "API OK" });
 });
 
 app.listen(3000, () => {
