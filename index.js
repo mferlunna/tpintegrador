@@ -1,8 +1,12 @@
 console.log("clinica");
 
 import express from "express";
+import  { pool } from "./controlador/conexion.js";
+import { testConexion } from "./controlador/testconexion.js"; 
 
 const app = express();
+
+await testConexion();
 
 app.use(express.json());
 
