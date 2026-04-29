@@ -16,9 +16,23 @@ app.get("/", (req, res) => {
     res.send({ estado: "ok", msg: "API OK" });
 });
 
-app.post("/especialidades", (req, res) => {
+app.post('/especialidades', (req, res) => {
     res.send({ estado: "ok", msg: "creado" });
 
+})
+
+app.get('/especialidades', async (req,res) => {
+    try {
+        const sql = 'SELECT * FROM especialidades WHERE activo - 1';
+
+        const resulst = await pool.query(sql);
+        console.log(resulst);
+
+        res.status(200).res.send({ estado: "ok", msg: "funcionando" });
+    
+    }catch{error} {
+        console.log(error);
+    }
 })
 
 process.loadEnvFile();
