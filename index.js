@@ -12,26 +12,25 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
     console.log("test get");
-    //res.status(200).send({ estado: "ok", msg: "API OK" });
-    res.send({ estado: "ok", msg: "API OK" });
+    res.status(200).send({ estado: "ok", msg: "API OK" });
+    
 });
 
 app.post('/especialidades', async (req, res) => {
     try {
         const { nombre } = req.body;
 
-        const sql = 'INSERT INTO especialidades (nombre, activo) VALUES (?, 1)';
+        const sql = 'INSERT INTO especialidades (nombre) VALUES (?)';
 
-        const [result] = await pool.query(sql, [nombre]);
+        const [result] = await pool.execute(sql, [nombre]);
 
-        res.send({
-            estado: "ok",
-            msg: "creado",
-            id: result.insertId
-        });
+        if (result.affectedRows > 0) {
+            res.status(201).send({ "estado": "true", msg: `Id creado $(result.insertId)`});
+        }
 
     } catch (error) {
         console.log(error);
+        res.status(500).send({ "estado": "false", msg: "error interno"});
     }
 })
 
