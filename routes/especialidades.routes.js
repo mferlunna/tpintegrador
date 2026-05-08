@@ -1,8 +1,13 @@
 import { Router } from "express";
+
 import {
+    
     crearEspecialidad,
     listarEspecialidades,
-    obtenerEspecialidadPorId
+    obtenerEspecialidadPorId,
+    editarEspecialidad,
+    borrarEspecialidad
+
 } from "../controlador/especialidades.controller.js";
 
 const router = Router();
@@ -13,4 +18,8 @@ router.get("/", listarEspecialidades);
 
 router.get("/:id_especialidades", obtenerEspecialidadPorId);
 
-export default router;
+router.put("/:id_especialidades", editarEspecialidad);
+
+router.delete("/:id_especialidades", borrarEspecialidad);
+
+export default router; 
