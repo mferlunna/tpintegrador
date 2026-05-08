@@ -12,7 +12,7 @@ await testConexion();
 
 app.use(express.json());
 app.use("/obras-sociales", obrasRoutes);
-app.use("/especialidades", especialidadesRoutes);
+app.use("/api/v1/especialidades", especialidadesRoutes);
 
 app.get("/", (req, res) => {
     console.log("test get");
