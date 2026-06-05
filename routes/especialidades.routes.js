@@ -1,22 +1,25 @@
-import { Router } from "express";
-
+import express from "express";
 import {
     crearEspecialidad,
     listarEspecialidades,
     obtenerEspecialidadPorId,
     editarEspecialidad,
     borrarEspecialidad
-} from "../controlador/especialidades.controller.js";
+} from "../controllers/especialidades.controller.js";
 
-const router = Router();
+import { existeEspecialidad } from "../middlewares/existeEspecialidad.middleware.js";
+import { validarId } from "../middlewares/validarId.middleware.js";
+import { validarEspecialidad } from "../middlewares/validarEspecialidad.middleware.js";
 
-router.post("/", crearEspecialidad);
+const router = express.Router();
+
+
+router.post("/", validarEspecialidad, crearEspecialidad);
+
+router.put("/:id_especialidad", validarEspecialidad, editarEspecialidad);
 
 router.get("/", listarEspecialidades);
-
 router.get("/:id_especialidad", obtenerEspecialidadPorId);
-
-router.put("/:id_especialidad", editarEspecialidad);
 
 router.delete("/:id_especialidad", borrarEspecialidad);
 

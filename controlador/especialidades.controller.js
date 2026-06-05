@@ -1,65 +1,78 @@
-import { pool } from "./conexion.js";
+import {
+    crearEspecialidadService,
+    listarEspecialidadesService,
+    obtenerEspecialidadPorIdService,
+    editarEspecialidadService,
+    borrarEspecialidadService
+} from "../servicios/especialidades.service.js";
+
 
 export const crearEspecialidad = async (req, res) => {
     try {
         const { nombre } = req.body;
 
         if (!nombre) {
-            return res.status(400).send({estado: false, msg: "El nombre es obligatorio"});
+            return res.status(400).send({
+                estado: false,
+                msg: "El nombre es obligatorio"
+            });
         }
 
-        const sql = 'INSERT INTO especialidades (nombre) VALUES (?)';
+        const result = await crearEspecialidadService(nombre);
 
-        const [result] = await pool.execute(sql, [nombre]);
-
-        if (result.affectedRows > 0) {
-            return res.status(201).send({estado: true, msg: "Especialidad creada", id: result.insertId});
-        }
-
-        return res.status(400).send({estado: false, msg: "No se pudo crear la especialidad"});
+        return res.status(201).send({
+            estado: true,
+            msg: "Especialidad creada",
+            id: result.insertId
+        });
 
     } catch (error) {
         console.log(error);
-
-        return res.status(500).send({estado: false, msg: "Error interno"});
+        return res.status(500).send({ estado: false, msg: "Error interno" });
     }
 };
+
 
 export const listarEspecialidades = async (req, res) => {
     try {
-        const sql = 'SELECT * FROM especialidades WHERE activo = 1';
+        const data = await listarEspecialidadesService();
 
-        const [especialidades] = await pool.query(sql);
-
-        return res.status(200).send({estado: true, data: especialidades});
+        return res.status(200).send({
+            estado: true,
+            data
+        });
 
     } catch (error) {
         console.log(error);
-
-        return res.status(500).send({estado: false, msg: "Error interno"});
+        return res.status(500).send({ estado: false, msg: "Error interno" });
     }
 };
+
 
 export const obtenerEspecialidadPorId = async (req, res) => {
     try {
-        const id_especialidad = req.params.id_especialidad;
+        const id = req.params.id_especialidad;
 
-        const sql = 'SELECT * FROM especialidades WHERE activo = 1 AND id_especialidad = ?';
+        const data = await obtenerEspecialidadPorIdService(id);
 
-        const [especialidades] = await pool.query(sql, [id_especialidad]);
-
-        if (especialidades.length === 0) {
-            return res.status(404).send({estado: false, msg: "Especialidad no encontrada"});
+        if (data.length === 0) {
+            return res.status(404).send({
+                estado: false,
+                msg: "Especialidad no encontrada"
+            });
         }
 
-        return res.status(200).send({estado: true, data: especialidades[0]});
+        return res.status(200).send({
+            estado: true,
+            data: data[0]
+        });
 
     } catch (error) {
         console.log(error);
-
-        return res.status(500).send({estado: false, msg: "Error interno"});
+        return res.status(500).send({ estado: false, msg: "Error interno" });
     }
 };
+
 
 export const editarEspecialidad = async (req, res) => {
     try {
@@ -67,43 +80,53 @@ export const editarEspecialidad = async (req, res) => {
         const { nombre } = req.body;
 
         if (!nombre) {
-            return res.status(400).send({estado: false, msg: "El nombre es obligatorio"});
+            return res.status(400).send({
+                estado: false,
+                msg: "El nombre es obligatorio"
+            });
         }
 
-        const sql = 'UPDATE especialidades SET nombre = ? WHERE id_especialidad = ?';
-
-        const [result] = await pool.query(sql, [nombre, id]);
+        const result = await editarEspecialidadService(nombre, id);
 
         if (result.affectedRows === 0) {
-            return res.status(404).send({estado: false, msg: "Especialidad no encontrada"});
+            return res.status(404).send({
+                estado: false,
+                msg: "Especialidad no encontrada"
+            });
         }
 
-        return res.status(200).send({estado: true, msg: "Especialidad actualizada"});
+        return res.status(200).send({
+            estado: true,
+            msg: "Especialidad actualizada"
+        });
 
     } catch (error) {
         console.log(error);
-
-        return res.status(500).send({estado: false, msg: "Error interno"});
+        return res.status(500).send({ estado: false, msg: "Error interno" });
     }
 };
+
 
 export const borrarEspecialidad = async (req, res) => {
     try {
         const id = req.params.id_especialidad;
 
-        const sql = 'UPDATE especialidades SET activo = 0 WHERE id_especialidad = ?';
-
-        const [result] = await pool.query(sql, [id]);
+        const result = await borrarEspecialidadService(id);
 
         if (result.affectedRows === 0) {
-            return res.status(404).send({estado: false, msg: "Especialidad no encontrada"});
+            return res.status(404).send({
+                estado: false,
+                msg: "Especialidad no encontrada"
+            });
         }
 
-        return res.status(200).send({estado: true, msg: "Especialidad eliminada"});
+        return res.status(200).send({
+            estado: true,
+            msg: "Especialidad eliminada"
+        });
 
     } catch (error) {
         console.log(error);
-
-        return res.status(500).send({estado: false, msg: "Error interno"});
+        return res.status(500).send({ estado: false, msg: "Error interno" });
     }
 };
