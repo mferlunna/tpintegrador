@@ -5,11 +5,11 @@ import {
     obtenerEspecialidadPorId,
     editarEspecialidad,
     borrarEspecialidad
-} from "../controllers/especialidades.controller.js";
+} from "../controlador/especialidades.controller.js";
 
-import { existeEspecialidad } from "../middlewares/existeEspecialidad.middleware.js";
-import { validarId } from "../middlewares/validarId.middleware.js";
-import { validarEspecialidad } from "../middlewares/validarEspecialidad.middleware.js";
+import { existeEspecialidad } from "../src/middlewares/existeEspecialidad.middleware.js";
+import { validarId } from "../src/middlewares/validarId.middleware.js";
+import { validarEspecialidad } from "../src/middlewares/validarEspecialidad.middleware.js";
 
 const router = express.Router();
 

@@ -1,16 +1,16 @@
 export const validarId = (req, res, next) => {
-    const { id_especialidad } = req.params;
+    const { id } = req.params;
 
-    const id = Number(id_especialidad);
+    const idNumerico = Number(id);
 
-    if (!id_especialidad || isNaN(id) || !Number.isInteger(id) || id <= 0) {
+    if (!id || isNaN(idNumerico) || !Number.isInteger(idNumerico) || idNumerico <= 0) {
         return res.status(400).send({
             estado: false,
             msg: "El ID debe ser un número válido mayor a 0"
         });
     }
 
-    req.params.id_especialidad = id;
+    req.params.id = idNumerico;
 
     next();
 };

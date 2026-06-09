@@ -4,7 +4,7 @@ import {
     obtenerEspecialidadPorIdService,
     editarEspecialidadService,
     borrarEspecialidadService
-} from "../servicios/especialidades.service.js";
+} from "../src/servicios/especialidades.service.js";
 
 
 export const crearEspecialidad = async (req, res) => {

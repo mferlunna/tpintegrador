@@ -1,22 +1,24 @@
 import express from "express";
 
 import {
-    crearObraSocial,
+    crearObra,
     listarObras,
     editarObra,
     eliminarObra,
     calcularCobertura
 } from "../controlador/obrasSociales.controller.js";
 
+import { validarId } from "../src/middlewares/validarId.middleware.js";
+
 const router = express.Router();
 
-router.post("/", crearObraSocial);
+router.post("/", crearObra);
 
 router.get("/", listarObras);
 
-router.put("/:id", editarObra);
+router.put("/:id", validarId, editarObra);
 
-router.delete("/:id", eliminarObra);
+router.delete("/:id", validarId, eliminarObra);
 
 router.post("/calcular-cobertura", calcularCobertura);
 
