@@ -1,103 +1,23 @@
-import express from 'express';
-import { check, param } from 'express-validator';
-import { validarCampos } from '../src/middlewares/validarCampos.js';
-import TransformarDTO from '../src/middlewares/transformarDTOS.js';
-import MedicosControlador from '../controlador/medicos.controller.js';
+import express from "express";
+import MedicosControlador from "../controlador/medicos.controller.js";
+
+import { verificarToken } from "../src/middlewares/auth.middleware.js";
+import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
 const router = express.Router();
 
-const medicosControlador = new MedicosControlador();
-const transformarDTO = new TransformarDTO();
+const controlador = new MedicosControlador();
 
-router.get(
-    '/',
-    medicosControlador.buscarTodos
-);
-router.get(
-    '/:id_medico/obras-sociales',
-    [
-        param('id_medico')
-            .isInt({ min: 1 })
-            .withMessage(
-                'El id_medico debe ser un entero positivo.'
-            ),
-        validarCampos
-    ],
-    medicosControlador.obtenerObrasSociales
-);
+// Listar médicos (usuarios logueados)
+router.get("/", verificarToken, controlador.buscarTodos);
 
-router.post(
-    '/:id_medico/obras-sociales',
-    [
-        param('id_medico')
-            .notEmpty()
-            .withMessage('El id_medico es obligatorio.')
-            .isInt({ min: 1 })
-            .withMessage(
-                'El id_medico debe ser un entero positivo.'
-            ),
+// Asociar médico con especialidades (solo admin)
+router.post("/especialidades", verificarToken, verificarRol([3]), controlador.asociarMedicoEspecialidades);
 
-        check('obras_sociales')
-            .exists()
-            .withMessage(
-                'obras_sociales es obligatorio.'
-            )
-            .isArray({ min: 1 })
-            .withMessage(
-                'obras_sociales debe contener al menos un elemento.'
-            ),
+// Obtener obras sociales de un médico (usuarios logueados)
+router.get("/:id_medico/obras-sociales", verificarToken, controlador.obtenerObrasSociales);
 
-        check('obras_sociales.*.id_obra_social')
-            .exists()
-            .withMessage(
-                'Cada obra social debe tener id_obra_social.'
-            )
-            .isInt({ min: 1 })
-            .withMessage(
-                'id_obra_social debe ser un entero positivo.'
-            ),
-
-        validarCampos
-    ],
-    transformarDTO.medicosAsociarDTO,
-    medicosControlador.asociarMedicoObrasSociales
-);
-
-router.post(
-    '/:id_medico/especialidades',
-    [
-        param('id_medico')
-            .notEmpty()
-            .withMessage('El id_medico es obligatorio.')
-            .isInt({ min: 1 })
-            .withMessage(
-                'El id_medico debe ser un entero positivo.'
-            ),
-
-        check('especialidades')
-            .exists()
-            .withMessage(
-                'especialidades es obligatorio.'
-            )
-            .isArray({ min: 1 })
-            .withMessage(
-                'especialidades debe contener al menos un elemento.'
-            ),
-
-        check('especialidades.*.id_especialidad')
-            .exists()
-            .withMessage(
-                'Cada especialidad debe tener id_especialidad.'
-            )
-            .isInt({ min: 1 })
-            .withMessage(
-                'id_especialidad debe ser un entero positivo.'
-            ),
-
-        validarCampos
-    ],
-    transformarDTO.medicosEspecialidadesDTO,
-    medicosControlador.asociarMedicoEspecialidades
-);
+// Asociar médico con obras sociales (solo admin)
+router.post("/obras-sociales", verificarToken, verificarRol([3]), controlador.asociarMedicoObrasSociales);
 
 export { router };

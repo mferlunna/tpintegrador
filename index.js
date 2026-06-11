@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
+
 console.log("clinica");
 
 const app = express();
