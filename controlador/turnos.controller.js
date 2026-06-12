@@ -2,7 +2,8 @@ import {
   crearTurnoService,
   obtenerTurnosService,
   eliminarTurnoService,
-  agendaSemanalService
+  agendaSemanalService,
+  marcarTurnoAtendidoService
 } from "../src/servicios/turnos.service.js";
 
 export const crearTurno = async (req, res) => {
@@ -54,6 +55,28 @@ export const listarTurnos = async (req, res) => {
   }
 };
 
+export const listarMisTurnos = async (req, res) => {
+  try {
+
+    const { id, rol } = req.usuario;
+
+    const turnos = await obtenerMisTurnosService(id, rol);
+
+    return res.status(200).json({
+      estado: true,
+      turnos
+    });
+
+  } catch {
+
+    return res.status(500).json({
+      estado: false,
+      mensaje: "Error interno"
+    });
+
+  }
+};
+
 export const agendaSemanal = async (req, res) => {
   try {
     const { id_medico, fecha } = req.query;
@@ -89,5 +112,28 @@ export const eliminarTurno = async (req, res) => {
       estado: false,
       mensaje: "Error interno"
     });
+  }
+};
+
+export const marcarTurnoAtendido = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await marcarTurnoAtendidoService(id);
+
+    return res.status(200).json({
+      estado: true,
+      mensaje: "Turno marcado como atendido"
+    });
+
+  } catch {
+
+    return res.status(500).json({
+      estado: false,
+      mensaje: "Error interno"
+    });
+
   }
 };

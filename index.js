@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-
 import { testConexion } from "./controlador/testconexion.js";
 import obrasRoutes from "./routes/obrasSociales.routes.js";
 import especialidadesRoutes from "./routes/especialidades.routes.js";
@@ -8,12 +7,12 @@ import { router as medicosRouter } from "./routes/medicos.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import turnosRoutes from "./routes/turnos.routes.js";
 import pacientesRoutes from "./routes/pacientes.routes.js";
+import estadisticasRoutes from "./routes/estadisticas.routes.js";
 
 
 dotenv.config();
 console.log("JWT_SECRET =", process.env.JWT_SECRET);
 console.log("JWT_EXPIRES =", process.env.JWT_EXPIRES);
-
 
 console.log("clinica");
 
@@ -32,6 +31,7 @@ app.use("/api/v1/especialidades", especialidadesRoutes);
 app.use("/api/v1/medicos", medicosRouter);
 app.use("/api/v1/turnos", turnosRoutes);
 app.use("/api/v1/pacientes", pacientesRoutes);
+app.use("/api/v1/estadisticas", estadisticasRoutes);
 
 // Test endpoint
 app.get("/", (req, res) => {

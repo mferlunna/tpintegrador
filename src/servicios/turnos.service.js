@@ -3,7 +3,8 @@ import {
   obtenerTurnosRepository,
   verificarSolapamientoRepository,
   agendaSemanalRepository,
-  eliminarTurnoRepository
+  eliminarTurnoRepository,
+  marcarTurnoAtendidoRepository
 } from "../repositorios/turnos.repository.js";
 
 const DURACION_MINUTOS = 40;
@@ -53,4 +54,8 @@ export const agendaSemanalService = async (id_medico, fechaInicio) => {
 
 export const eliminarTurnoService = async (id) => {
   return await eliminarTurnoRepository(id);
+};
+
+export const marcarTurnoAtendidoService = async (id) => {
+  return await marcarTurnoAtendidoRepository(id);
 };

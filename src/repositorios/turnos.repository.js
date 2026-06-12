@@ -72,3 +72,17 @@ export const eliminarTurnoRepository = async (id) => {
   const [result] = await pool.execute(sql, [id]);
   return result;
 };
+
+export const marcarTurnoAtendidoRepository = async (id) => {
+
+  const sql = `
+    UPDATE turnos_reservas
+    SET atentido = 1
+    WHERE id_turno_reserva = ?
+      AND activo = 1
+  `;
+
+  const [result] = await pool.execute(sql, [id]);
+
+  return result;
+};
