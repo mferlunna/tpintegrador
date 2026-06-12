@@ -1,150 +1,113 @@
-import pool from "../database/db.js";
+const db = require('../config/db');
 
-// ─── Queries SQL ────────────────────────────────────────────────────────────
+const turnosController = {
+    
+    // 1. CREAR RESERVA
+    crearReserva: async (req, res) => {
+        const { id_medico, id_paciente, id_obra_social, fecha_hora } = req.body;
 
-const SQL = {
-    obtenerPacienteConObraSocial: `
-        SELECT p.*, os.porcentaje_descuento, os.es_particular
-        FROM pacientes p
-        INNER JOIN obras_sociales os ON p.obra_social_id = os.id
-        WHERE p.id = ? AND p.activo = 1
-    `,
-    obtenerMedico: `
-        SELECT *
-        FROM medicos
-        WHERE id = ? AND activo = 1
-    `,
-    verificarTurnoOcupado: `
-        SELECT id
-        FROM turnos_reservas
-        WHERE medico_id = ? AND fecha_hora = ? AND activo = 1
-    `,
-    verificarTurnoDuplicadoPaciente: `
-        SELECT id
-        FROM turnos_reservas
-        WHERE paciente_id = ? AND fecha_hora = ? AND activo = 1
-    `,
-    insertarTurno: `
-        INSERT INTO turnos_reservas
-            (paciente_id, medico_id, fecha_hora, valor_total, atendido, activo)
-        VALUES (?, ?, ?, ?, 0, 1)
-    `,
-    obtenerTurnoPorIdYMedico: `
-        SELECT *
-        FROM turnos_reservas
-        WHERE id = ? AND medico_id = ? AND activo = 1
-    `,
-    marcarAtendido: `
-        UPDATE turnos_reservas
-        SET atendido = 1
-        WHERE id = ?
-    `,
-    obtenerTurnosPorMedico: `
-        SELECT *
-        FROM turnos_reservas
-        WHERE medico_id = ? AND activo = 1
-        ORDER BY fecha_hora
-    `,
-    obtenerTurnosPorPaciente: `
-        SELECT *
-        FROM turnos_reservas
-        WHERE paciente_id = ? AND activo = 1
-        ORDER BY fecha_hora
-    `,
-};
+        try {
+            // REGLA DE NEGOCIO: Verificar que el médico exista y esté ACTIVO
+            const [medicos] = await db.query(
+                'SELECT valor_consulta, activo FROM medicos WHERE id_medico = ? AND activo = 1', 
+                [id_medico]
+            );
+            if (medicos.length === 0) {
+                return res.status(404).json({ message: 'Médico no encontrado o inactivo.' });
+            }
+            const medico = medicos[0];
 
-// ─── Helpers de negocio ──────────────────────────────────────────────────────
+            // REGLA DE NEGOCIO: Verificar obra social
+            const [obrasSociales] = await db.query(
+                'SELECT porcentaje_descuento, es_particular, activo FROM obras_sociales WHERE id_obra_social = ? AND activo = 1', 
+                [id_obra_social]
+            );
+            if (obrasSociales.length === 0) {
+                return res.status(404).json({ message: 'Obra Social no encontrada o inactiva.' });
+            }
+            const obraSocial = obrasSociales[0];
 
-const calcularValorTotal = (valorConsulta, esParticular, porcentajeDescuento) => {
-    if (esParticular) return valorConsulta;
-    return valorConsulta - valorConsulta * porcentajeDescuento;
-};
+            // REGLA DE NEGOCIO
+            let valor_total = 0;
+            const valorConsulta = parseFloat(medico.valor_consulta);
+            const porcentajeDescuento = parseFloat(obraSocial.porcentaje_descuento);
 
-const validarFechaFutura = (fechaHora) => {
-    if (new Date(fechaHora) <= new Date()) {
-        throw new Error("La fecha del turno debe ser futura");
+            if (obraSocial.es_particular === 0) {
+                // Si NO es particular, se aplica el descuento: valor_consulta - (descuento * valor_consulta)
+                valor_total = valorConsulta - (porcentajeDescuento * valorConsulta); [cite: 125]
+            } else {
+                // Si SÍ es particular, el valor es directo
+                valor_total = valorConsulta; [cite: 126]
+            }
+
+            // Insertar el turno en la base de datos
+            const queryInsert = `
+                INSERT INTO turnos_reservas 
+                (id_medico, id_paciente, id_obra_social, fecha_hora, valor_total, atentido, activo) 
+                VALUES (?, ?, ?, ?, ?, 0, 1)
+            `;
+            const [resultado] = await db.query(queryInsert, [id_medico, id_paciente, id_obra_social, fecha_hora, valor_total]);
+
+            return res.status(201).json({
+                message: 'Reserva creada con éxito.',
+                id_turno_reserva: resultado.insertId,
+                valor_total: valor_total
+            });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Error interno del servidor al crear la reserva.' }); [cite: 139]
+        }
+    },
+
+    // 2. LISTAR TURNOS PROPIOS
+    listarTurnosPaciente: async (req, res) => {
+        const id_usuario_autenticado = req.user.id; 
+
+        try {
+            // Buscamos el id_paciente asociado a este usuario
+            const [pacientes] = await db.query('SELECT id_paciente FROM pacientes WHERE id_usuario = ?', [id_usuario_autenticado]);
+            if (pacientes.length === 0) {
+                return res.status(404).json({ message: 'Paciente no encontrado.' });
+            }
+            const id_paciente = pacientes[0].id_paciente;
+
+            // REGLA DE NEGOCIO: Traer solo turnos del paciente que estén ACTIVO = 1
+            const queryTurnos = `
+                SELECT id_turno_reserva, id_medico, fecha_hora, valor_total, atentido 
+                FROM turnos_reservas 
+                WHERE id_paciente = ? AND activo = 1 
+                ORDER BY fecha_hora ASC
+            `; [cite: 128]
+            
+            const [turnos] = await db.query(queryTurnos, [id_paciente]);
+            return res.status(200).json(turnos);
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Error al obtener los turnos.' }); [cite: 139]
+        }
+    },
+
+    //SOFT DELETE
+    cancelarReserva: async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const querySoftDelete = 'UPDATE turnos_reservas SET activo = 0 WHERE id_turno_reserva = ? AND activo = 1'; [cite: 127, 128]
+            const [resultado] = await db.query(querySoftDelete, [id]);
+
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({ message: 'El turno no existe o ya fue cancelado.' });
+            }
+
+            return res.status(200).json({ message: 'Reserva cancelada correctamente (Soft Delete aplicado).' }); [cite: 127]
+
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Error al intentar cancelar la reserva.' }); [cite: 139]
+        }
     }
 };
 
-// ─── Validaciones con DB ─────────────────────────────────────────────────────
-
-const obtenerPacienteOFallar = async (connection, pacienteId) => {
-    const [rows] = await connection.query(SQL.obtenerPacienteConObraSocial, [pacienteId]);
-    if (rows.length === 0) throw new Error("Paciente inexistente");
-    return rows[0];
-};
-
-const obtenerMedicoOFallar = async (connection, medicoId) => {
-    const [rows] = await connection.query(SQL.obtenerMedico, [medicoId]);
-    if (rows.length === 0) throw new Error("Médico inexistente");
-    return rows[0];
-};
-
-const validarDisponibilidadHorario = async (connection, medicoId, fechaHora) => {
-    const [rows] = await connection.query(SQL.verificarTurnoOcupado, [medicoId, fechaHora]);
-    if (rows.length > 0) throw new Error("Horario no disponible");
-};
-
-const validarSinTurnoDuplicado = async (connection, pacienteId, fechaHora) => {
-    const [rows] = await connection.query(SQL.verificarTurnoDuplicadoPaciente, [pacienteId, fechaHora]);
-    if (rows.length > 0) throw new Error("El paciente ya posee un turno en ese horario");
-};
-
-// ─── Servicios ───────────────────────────────────────────────────────────────
-
-export const crearTurno = async (pacienteId, medicoId, fechaHora) => {
-    const connection = await pool.getConnection();
-
-    try {
-        await connection.beginTransaction();
-
-        const paciente = await obtenerPacienteOFallar(connection, pacienteId);
-        const medico = await obtenerMedicoOFallar(connection, medicoId);
-
-        validarFechaFutura(fechaHora);
-        await validarDisponibilidadHorario(connection, medicoId, fechaHora);
-        await validarSinTurnoDuplicado(connection, pacienteId, fechaHora);
-
-        const valorTotal = calcularValorTotal(
-            medico.valor_consulta,
-            paciente.es_particular,
-            paciente.porcentaje_descuento
-        );
-
-        const [resultado] = await connection.query(SQL.insertarTurno, [
-            pacienteId,
-            medicoId,
-            fechaHora,
-            valorTotal,
-        ]);
-
-        await connection.commit();
-        return resultado.insertId;
-
-    } catch (error) {
-        await connection.rollback();
-        throw error;
-    } finally {
-        connection.release();
-    }
-};
-
-export const marcarAtendido = async (turnoId, medicoId) => {
-    const [rows] = await pool.query(SQL.obtenerTurnoPorIdYMedico, [turnoId, medicoId]);
-
-    if (rows.length === 0) {
-        throw new Error("No puede modificar este turno");
-    }
-
-    await pool.query(SQL.marcarAtendido, [turnoId]);
-};
-
-export const obtenerTurnosMedico = async (medicoId) => {
-    const [rows] = await pool.query(SQL.obtenerTurnosPorMedico, [medicoId]);
-    return rows;
-};
-
-export const obtenerTurnosPaciente = async (pacienteId) => {
-    const [rows] = await pool.query(SQL.obtenerTurnosPorPaciente, [pacienteId]);
-    return rows;
-};
+module.exports = turnosController;
