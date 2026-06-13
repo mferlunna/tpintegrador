@@ -11,6 +11,13 @@ import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Pacientes
+ *   description: Gestión de pacientes
+ */
+
 router.post("/", verificarToken, verificarRol([3]), crearPaciente);
 router.get("/", verificarToken, verificarRol([3]), listarPacientes);
 router.put("/:id", verificarToken, verificarRol([3]), actualizarPaciente);

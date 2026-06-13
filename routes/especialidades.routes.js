@@ -14,13 +14,39 @@ import { validarId } from "../src/middlewares/validarId.middleware.js";
 
 const router = express.Router();
 
-// Todos los usuarios logueados pueden listar
+/**
+ * @swagger
+ * /medicos/especialidades:
+ *   post:
+ *     tags: [Médicos]
+ *     summary: Asociar médico con especialidades
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_medico
+ *               - id_especialidad
+ *             properties:
+ *               id_medico:
+ *                 type: integer
+ *               id_especialidad:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Asociación creada correctamente
+ */
+
 router.get("/", verificarToken, listarEspecialidades);
 
-// Todos los usuarios logueados pueden consultar una especialidad
+
 router.get("/:id_especialidad", verificarToken, validarId, obtenerEspecialidadPorId);
 
-// Solo ADMIN (rol 3)
+
 router.post("/", verificarToken, verificarRol([3]), crearEspecialidad);
 
 router.put("/:id_especialidad", verificarToken, verificarRol([3]), validarId, editarEspecialidad);

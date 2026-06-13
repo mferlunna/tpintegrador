@@ -6,6 +6,12 @@ export const login = async (req, res) => {
     try {
         const { email, contrasenia } = req.body;
 
+         if (!email || !contrasenia) {
+            return res.status(400).json({
+                msg: "Faltan email o contraseña"
+            });
+        }
+
         const [rows] = await pool.query(
             "SELECT * FROM usuarios WHERE email = ? AND activo = 1",
             [email]
@@ -18,6 +24,12 @@ export const login = async (req, res) => {
         }
 
         const usuario = rows[0];
+
+        if (!usuario.contrasenia) {
+            return res.status(500).json({
+                msg: "Usuario sin contraseña en base de datos"
+            });
+        }
 
         const valid = await bcrypt.compare(
             contrasenia,
