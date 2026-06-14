@@ -1,7 +1,7 @@
 import express from "express";
 import { login } from "../controlador/auth.controller.js";
+import { validarLogin } from "../src/middlewares/validarLogin.middleware.js";
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
-import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
 const router = express.Router();
 
@@ -26,19 +26,17 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - email
- *               - password
+ *               - contrasenia
  *             properties:
  *               email:
  *                 type: string
- *               password:
+ *               contrasenia:
  *                 type: string
  *     responses:
  *       200:
  *         description: Token generado correctamente
  */
-
-
-router.post("/login", login);
+router.post("/login", validarLogin, login);
 
 router.get("/perfil", verificarToken, (req, res) => {
     res.json({

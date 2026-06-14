@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import { specs, swaggerUi } from "./swagger.js";
 import cors from "cors";
 import { testConexion } from "./controlador/testconexion.js";
@@ -10,6 +11,7 @@ import authRoutes from "./routes/auth.routes.js";
 import turnosRoutes from "./routes/turnos.routes.js";
 import pacientesRoutes from "./routes/pacientes.routes.js";
 import estadisticasRoutes from "./routes/estadisticas.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 
 
@@ -23,6 +25,8 @@ const app = express();
 
 
 app.use(express.json());
+app.use(morgan("dev"));
+app.use("/api/v1/upload", uploadRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(cors({origin: process.env.FRONTEND_URL,  credentials: true}));
 

@@ -86,3 +86,71 @@ export const marcarTurnoAtendidoRepository = async (id) => {
 
   return result;
 };
+export const obtenerMedicoRepository = async (conn, id_medico) => {
+
+  const [rows] = await conn.execute(
+    `
+    SELECT valor_consulta
+    FROM medicos
+    WHERE id_medico = ?
+    `,
+    [id_medico]
+  );
+
+  return rows[0];
+};
+
+export const obtenerObraSocialRepository = async (
+  conn,
+  id_obra_social
+) => {
+
+  const [rows] = await conn.execute(
+    `
+    SELECT
+      porcentaje_descuento,
+      es_particular
+    FROM obras_sociales
+    WHERE id_obra_social = ?
+      AND activo = 1
+    `,
+    [id_obra_social]
+  );
+
+  return rows[0];
+};
+
+export const crearTurnoRepositoryTx = async (
+  conn,
+  id_medico,
+  id_paciente,
+  id_obra_social,
+  fecha_hora,
+  valor_total
+) => {
+
+  const [result] = await conn.execute(
+    `
+    INSERT INTO turnos_reservas
+    (
+      id_medico,
+      id_paciente,
+      id_obra_social,
+      fecha_hora,
+      valor_total,
+      atentido,
+      activo
+    )
+    VALUES (?, ?, ?, ?, ?, 0, 1)
+    `,
+    [
+      id_medico,
+      id_paciente,
+      id_obra_social,
+      fecha_hora,
+      valor_total
+    ]
+  );
+
+  return result;
+};

@@ -13,8 +13,32 @@ const router = express.Router();
  *   description: Reportes del sistema
  */
 
+/**
+ * @swagger
+ * /estadisticas:
+ *   get:
+ *     tags: [Estadísticas]
+ *     summary: Obtener estadísticas de atención
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas correctamente
+ */
 router.get("/", verificarToken, verificarRol([3]), obtenerEstadisticas);
 
+/**
+ * @swagger
+ * /estadisticas/pdf:
+ *   get:
+ *     tags: [Estadísticas]
+ *     summary: Descargar reporte PDF
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: PDF generado correctamente
+ */
 router.get("/pdf", generarReportePDF);
 
 export default router;

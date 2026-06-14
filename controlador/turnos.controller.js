@@ -12,17 +12,15 @@ export const crearTurno = async (req, res) => {
       id_medico,
       id_paciente,
       id_obra_social,
-      fecha_hora,
-      valor_total
+      fecha_hora
     } = req.body;
 
     const result = await crearTurnoService(
-      id_medico,
-      id_paciente,
-      id_obra_social,
-      fecha_hora,
-      valor_total
-    );
+    id_medico,
+    id_paciente,
+    id_obra_social,
+    fecha_hora
+  );
 
     return res.status(201).json({
       estado: true,
