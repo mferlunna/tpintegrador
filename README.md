@@ -6,7 +6,6 @@
 * Cristian Gimenez
 * Noelia Mariana Rodeiro
 * David De Bueno
-* Francisco Diaz
 * Rita Carina Herrera
 
 1. Clonar el repositorio:
@@ -76,7 +75,7 @@ PORT=3000
 DB_HOST=localhost
 DB_DATABASE=prog3_turnos
 DB_USER=prog3_turnos
-DB_PASSWORD=1234
+DB_PASSWORD=****
 
 JWT_SECRET=grupo_s_prog_3_2026
 JWT_EXPIRES=1d
@@ -90,17 +89,13 @@ npm run dev
 
 ## Usuarios de prueba
 
-### Médico
+## Usuarios de prueba
 
-Contraseña: `medico`
-
-### Paciente
-
-Contraseña: `paciente`
-
-### Administrador
-
-Contraseña: `admin`
+| Rol         | Contraseña |
+|---------------|------------|
+| Médico        | medico |
+| Paciente      | paciente |
+| Administrador | admin |
 
 ## Documentación API
 
