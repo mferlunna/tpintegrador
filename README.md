@@ -89,8 +89,6 @@ npm run dev
 
 ## Usuarios de prueba
 
-## Usuarios de prueba
-
 | Rol         | Contraseña |
 |---------------|------------|
 | Médico        | medico |
