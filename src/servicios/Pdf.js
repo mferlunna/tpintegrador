@@ -1,5 +1,5 @@
 import PDFDocument from "pdfkit";
-import { obtenerEstadisticasService } from "../src/servicios/estadisticas.service.js";
+import { obtenerEstadisticasService } from "./estadisticas.service.js";
 
 export const generarReportePDF = async (req, res) => {
   try {
