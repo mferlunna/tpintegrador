@@ -89,7 +89,7 @@ npm run dev
 
 ## Usuarios de prueba
 
-| Rol         | Contraseña |
+| Rol           | Contraseña |
 |---------------|------------|
 | Médico        | medico |
 | Paciente      | paciente |
