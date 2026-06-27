@@ -41,6 +41,7 @@ app.use("/api/v1/medicos", medicosRouter);
 app.use("/api/v1/turnos", turnosRoutes);
 app.use("/api/v1/pacientes", pacientesRoutes);
 app.use("/api/v1/estadisticas", estadisticasRoutes);
+app.use("/api/v1/uploads", express.static("uploads"));
 
 
 app.get("/", (req, res) => {

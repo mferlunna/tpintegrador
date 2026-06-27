@@ -2,23 +2,20 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { pool } from "../src/db/conexion.js";
 
+import { buscarUsuarioPorEmail } from "../src/repositorios/auth.repository.js";
+
 export const login = async (req, res) => {
     try {
 
         const { email, contrasenia } = req.body;
 
-        const [rows] = await pool.query(
-            "SELECT * FROM usuarios WHERE email = ? AND activo = 1",
-            [email]
-        );
+        const usuario = await buscarUsuarioPorEmail(email);
 
-        if (rows.length === 0) {
+        if (!usuario) {
             return res.status(400).json({
                 msg: "Usuario no encontrado"
             });
         }
-
-        const usuario = rows[0];
 
         if (!usuario.contrasenia) {
             return res.status(500).json({

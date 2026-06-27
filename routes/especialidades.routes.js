@@ -12,6 +12,9 @@ import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
 import { validarId } from "../src/middlewares/validarId.middleware.js";
 
+import { body, param } from "express-validator";
+import { validarCampos } from "../src/middlewares/validarCampos.middleware.js";
+
 const router = express.Router();
 
 /**
@@ -43,13 +46,60 @@ const router = express.Router();
 
 router.get("/", verificarToken, verificarRol([3]), listarEspecialidades);
 
-router.get("/:id_especialidad", verificarToken, verificarRol([3]), validarId, obtenerEspecialidadPorId);
+router.get("/:id_especialidad",
+  verificarToken,
+  verificarRol([3]),
+  [
+    param("id_especialidad")
+      .isInt()
+      .withMessage("ID inválido")
+  ],
+  validarCampos,
+  obtenerEspecialidadPorId
+);
 
+router.post("/",
+  verificarToken,
+  verificarRol([3]),
+  [
+    body("nombre")
+      .notEmpty()
+      .withMessage("Nombre obligatorio")
+      .isString()
+      .withMessage("Nombre inválido")
+  ],
+  validarCampos,
+  crearEspecialidad
+);
 
-router.post("/", verificarToken, verificarRol([3]), crearEspecialidad);
+router.put("/:id_especialidad",
+  verificarToken,
+  verificarRol([3]),
+  [
+    param("id_especialidad")
+      .isInt()
+      .withMessage("ID inválido"),
 
-router.put("/:id_especialidad", verificarToken, verificarRol([3]), validarId, editarEspecialidad);
+    body("nombre")
+      .notEmpty()
+      .withMessage("Nombre obligatorio")
+      .isString()
+      .withMessage("Nombre inválido")
+  ],
+  validarCampos,
+  editarEspecialidad
+);
 
-router.delete("/:id_especialidad", verificarToken, verificarRol([3]), validarId, borrarEspecialidad);
+router.delete("/:id_especialidad",
+  verificarToken,
+  verificarRol([3]),
+  [
+    param("id_especialidad")
+      .isInt()
+      .withMessage("ID inválido")
+  ],
+  validarCampos,
+  borrarEspecialidad
+);
 
 export default router;

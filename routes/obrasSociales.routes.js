@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   crearObra,
   listarObras,
@@ -7,11 +8,28 @@ import {
   calcularCobertura
 } from "../controlador/obrasSociales.controller.js";
 
-import { validarId } from "../src/middlewares/validarId.middleware.js";
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
+import { body, param } from "express-validator";
+import { validarCampos } from "../src/middlewares/validarCampos.middleware.js";
+
 const router = express.Router();
+
+router.post("/", verificarToken,
+  verificarRol([3]),
+  [
+    body("nombre")
+      .notEmpty()
+      .withMessage("Nombre obligatorio"),
+
+    body("porcentaje_descuento")
+      .isNumeric()
+      .withMessage("Debe ser numérico")
+  ],
+  validarCampos,
+  crearObra
+);
 
 /**
  * @swagger
@@ -51,7 +69,27 @@ router.post("/", verificarToken, verificarRol([3]), crearObra);
  *     security:
  *       - bearerAuth: []
  */
-router.put("/:id", verificarToken, verificarRol([3]), validarId, editarObra);
+router.put("/:id",
+  verificarToken,
+  verificarRol([3]),
+  [
+    param("id")
+      .isInt()
+      .withMessage("ID inválido"),
+
+    body("nombre")
+      .notEmpty()
+      .withMessage("Nombre obligatorio")
+      .isString()
+      .withMessage("Nombre inválido"),
+
+    body("porcentaje_descuento")
+      .isNumeric()
+      .withMessage("Debe ser numérico")
+  ],
+  validarCampos,
+  editarObra
+);
 
 /**
  * @swagger
@@ -62,7 +100,17 @@ router.put("/:id", verificarToken, verificarRol([3]), validarId, editarObra);
  *     security:
  *       - bearerAuth: []
  */
-router.delete("/:id", verificarToken, verificarRol([3]), validarId, eliminarObra);
+router.delete("/:id",
+  verificarToken,
+  verificarRol([3]),
+  [
+    param("id")
+      .isInt()
+      .withMessage("ID inválido")
+  ],
+  validarCampos,
+  eliminarObra
+);
 
 /**
  * @swagger
