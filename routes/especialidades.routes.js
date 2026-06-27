@@ -41,10 +41,9 @@ const router = express.Router();
  *         description: Asociación creada correctamente
  */
 
-router.get("/", verificarToken, listarEspecialidades);
+router.get("/", verificarToken, verificarRol([3]), listarEspecialidades);
 
-
-router.get("/:id_especialidad", verificarToken, validarId, obtenerEspecialidadPorId);
+router.get("/:id_especialidad", verificarToken, verificarRol([3]), validarId, obtenerEspecialidadPorId);
 
 
 router.post("/", verificarToken, verificarRol([3]), crearEspecialidad);

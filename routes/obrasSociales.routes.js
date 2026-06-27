@@ -29,7 +29,7 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  */
-router.get("/", verificarToken, listarObras);
+router.get("/", verificarToken, verificarRol([3]), listarObras);
 
 /**
  * @swagger

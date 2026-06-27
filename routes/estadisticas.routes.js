@@ -1,6 +1,6 @@
 import express from "express";
 import { obtenerEstadisticas } from "../controlador/estadisticas.controller.js";
-import { generarReportePDF } from "../controlador/Pdf.js";
+import { generarReportePDF } from "../src/servicios/Pdf.js";
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
