@@ -1,22 +1,33 @@
 import { obtenerEstadisticasService } from "../src/servicios/estadisticas.service.js";
+import { crearPDF } from "../src/servicios/pdf.service.js";
 
 export const obtenerEstadisticas = async (req, res) => {
+    try {
+        const data = await obtenerEstadisticasService();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({
+            msg: "Error al obtener estadísticas"
+        });
+    }
+};
 
-  try {
+export const generarReportePDF = async (req, res) => {
+    try {
+        const doc = await crearPDF();
 
-    const data =
-      await obtenerEstadisticasService();
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=reporte.pdf"
+        );
 
-    res.json({
-      estado: true,
-      data
-    });
+        doc.pipe(res);
 
-  } catch {
-
-    res.status(500).json({
-      estado: false
-    });
-
-  }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Error al generar PDF"
+        });
+    }
 };

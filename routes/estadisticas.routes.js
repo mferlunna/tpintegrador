@@ -1,6 +1,5 @@
 import express from "express";
-import { obtenerEstadisticas } from "../controlador/estadisticas.controller.js";
-import { generarReportePDF } from "../src/servicios/Pdf.js";
+import { obtenerEstadisticas, generarReportePDF } from "../controlador/estadisticas.controller.js";
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
 
@@ -39,6 +38,6 @@ router.get("/", verificarToken, verificarRol([3]), obtenerEstadisticas);
  *       200:
  *         description: PDF generado correctamente
  */
-router.get("/pdf", generarReportePDF);
+router.get("/pdf", verificarToken, verificarRol([3]), generarReportePDF);
 
 export default router;
