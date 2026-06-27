@@ -13,6 +13,19 @@ import {
 
 const DURACION_MINUTOS = 40;
 
+
+const calcularValorTotal = (medico, obra) => {
+
+  const valorConsulta = Number(medico.valor_consulta);
+
+  if (obra.es_particular === 1) {
+    return valorConsulta;
+  }
+
+  return valorConsulta -
+    (valorConsulta * Number(obra.porcentaje_descuento) / 100);
+};
+
 export const crearTurnoService = async (
   id_medico,
   id_paciente,
@@ -44,39 +57,19 @@ export const crearTurnoService = async (
       throw new Error("Obra social inexistente");
     }
 
-    let valor_total;
-
-    if (obra.es_particular === 1) {
-
-      valor_total = Number(
-        medico.valor_consulta
-      );
-
-    } else {
-
-      valor_total =
-        Number(medico.valor_consulta) -
-        (
-          Number(medico.valor_consulta) *
-          Number(obra.porcentaje_descuento) /
-          100
-        );
-
-    }
+    const valor_total = calcularValorTotal(medico, obra);
 
     const inicio = new Date(fecha_hora);
 
     const fin = new Date(
-      inicio.getTime() +
-      DURACION_MINUTOS * 60000
+      inicio.getTime() + DURACION_MINUTOS * 60000
     );
 
-    const conflicto =
-      await verificarSolapamientoRepository(
-        id_medico,
-        inicio,
-        fin
-      );
+    const conflicto = await verificarSolapamientoRepository(
+      id_medico,
+      inicio,
+      fin
+    );
 
     if (conflicto.length > 0) {
       throw new Error(
@@ -84,15 +77,14 @@ export const crearTurnoService = async (
       );
     }
 
-    const result =
-      await crearTurnoRepositoryTx(
-        conn,
-        id_medico,
-        id_paciente,
-        id_obra_social,
-        fecha_hora,
-        valor_total
-      );
+    const result = await crearTurnoRepositoryTx(
+      conn,
+      id_medico,
+      id_paciente,
+      id_obra_social,
+      fecha_hora,
+      valor_total
+    );
 
     await conn.commit();
 
