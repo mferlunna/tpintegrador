@@ -1,6 +1,7 @@
 import express from "express";
 import { login } from "../controlador/auth.controller.js";
-import { validarLogin } from "../src/middlewares/validarLogin.middleware.js";
+import { body } from "express-validator";
+import { validarCampos } from "../src/middlewares/validarCampos.middleware.js";
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -18,31 +19,38 @@ const router = express.Router();
  *   post:
  *     tags: [Auth]
  *     summary: Login de usuario
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - contrasenia
- *             properties:
- *               email:
- *                 type: string
- *               contrasenia:
- *                 type: string
- *     responses:
- *       200:
- *         description: Token generado correctamente
  */
-router.post("/login", validarLogin, login);
+router.post(
+  "/login",
+  [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("El email es obligatorio")
+      .isEmail()
+      .withMessage("Email inválido"),
 
+    body("contrasenia")
+      .notEmpty()
+      .withMessage("La contraseña es obligatoria")
+  ],
+  validarCampos,
+  login
+);
+
+/**
+ * @swagger
+ * /auth/perfil:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Perfil del usuario autenticado
+ *     security:
+ *       - bearerAuth: []
+ */
 router.get("/perfil", verificarToken, (req, res) => {
-    res.json({
-        msg: "Acceso permitido",
-        usuario: req.usuario
-    });
+  res.json({ msg: "Acceso permitido",
+    usuario: req.usuario
+  });
 });
 
 export default router;

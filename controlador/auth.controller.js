@@ -4,13 +4,8 @@ import { pool } from "../src/db/conexion.js";
 
 export const login = async (req, res) => {
     try {
-        const { email, contrasenia } = req.body;
 
-         if (!email || !contrasenia) {
-            return res.status(400).json({
-                msg: "Faltan email o contraseña"
-            });
-        }
+        const { email, contrasenia } = req.body;
 
         const [rows] = await pool.query(
             "SELECT * FROM usuarios WHERE email = ? AND activo = 1",
@@ -27,7 +22,7 @@ export const login = async (req, res) => {
 
         if (!usuario.contrasenia) {
             return res.status(500).json({
-                msg: "Usuario sin contraseña en base de datos"
+                msg: "Usuario sin contrasenia en base de datos"
             });
         }
 
@@ -38,7 +33,7 @@ export const login = async (req, res) => {
 
         if (!valid) {
             return res.status(400).json({
-                msg: "Contraseña incorrecta"
+                msg: "Contrasenia incorrecta"
             });
         }
 
