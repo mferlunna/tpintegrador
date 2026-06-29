@@ -10,7 +10,6 @@ import {
 
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
-import { validarId } from "../src/middlewares/validarId.middleware.js";
 
 import { body, param } from "express-validator";
 import { validarCampos } from "../src/middlewares/validarCampos.middleware.js";
@@ -44,11 +43,11 @@ const router = express.Router();
  *         description: Asociación creada correctamente
  */
 
-router.get("/", verificarToken, verificarRol([3]), listarEspecialidades);
+router.get("/", verificarToken, verificarRol([2,3]), listarEspecialidades);
 
 router.get("/:id_especialidad",
   verificarToken,
-  verificarRol([3]),
+  verificarRol([2,3]),
   [
     param("id_especialidad")
       .isInt()

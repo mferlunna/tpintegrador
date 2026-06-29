@@ -121,6 +121,6 @@ router.delete("/:id",
  *     security:
  *       - bearerAuth: []
  */
-router.post("/calcular-cobertura", verificarToken, calcularCobertura);
+router.post("/calcular-cobertura", verificarToken, verificarRol([3]), calcularCobertura);
 
 export default router;

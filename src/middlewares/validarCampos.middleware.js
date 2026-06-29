@@ -6,7 +6,7 @@ export const validarCampos = (req, res, next) => {
 
   if (!errores.isEmpty()) {
     return res.status(400).json({
-      errores: errors.array()
+      errores: errores.array()
     });
   }
 

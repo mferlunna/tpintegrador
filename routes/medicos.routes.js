@@ -26,7 +26,7 @@ const controlador = new MedicosControlador();
  *       200:
  *         description: Lista de médicos
  */
-router.get("/", verificarToken, controlador.buscarTodos);
+router.get("/", verificarToken, verificarRol([2,3]), controlador.buscarTodos);
 
 /**
  * @swagger
@@ -48,7 +48,7 @@ router.post("/especialidades", verificarToken, verificarRol([3]), controlador.as
  *     security:
  *       - bearerAuth: []
  */
-router.get("/:id_medico/obras-sociales", verificarToken, controlador.obtenerObrasSociales);
+router.get("/:id_medico/obras-sociales", verificarToken, verificarRol([2,3]), controlador.obtenerObrasSociales);
 
 /**
  * @swagger
