@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { pool } from "../src/db/conexion.js";
 
 import { buscarUsuarioPorEmail } from "../src/repositorios/auth.repository.js";
 

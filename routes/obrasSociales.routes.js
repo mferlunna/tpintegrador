@@ -58,7 +58,6 @@ router.get("/", verificarToken, verificarRol([3]), listarObras);
  *     security:
  *       - bearerAuth: []
  */
-router.post("/", verificarToken, verificarRol([3]), crearObra);
 
 /**
  * @swagger
