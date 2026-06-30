@@ -154,3 +154,44 @@ export const crearTurnoRepositoryTx = async (
 
   return result;
 };
+
+export const obtenerMisTurnosRepository = async (idUsuario, rol) => {
+
+  let sql = "";
+  let params = [idUsuario];
+
+  if (rol === 1) {
+
+    sql = `
+      SELECT tr.*
+      FROM turnos_reservas tr
+      INNER JOIN medicos m
+        ON tr.id_medico = m.id_medico
+      WHERE m.id_usuario = ?
+        AND tr.activo = 1
+      ORDER BY tr.fecha_hora ASC
+    `;
+
+  } else if (rol === 2) {
+
+    sql = `
+      SELECT tr.*
+      FROM turnos_reservas tr
+      INNER JOIN pacientes p
+        ON tr.id_paciente = p.id_paciente
+      WHERE p.id_usuario = ?
+        AND tr.activo = 1
+      ORDER BY tr.fecha_hora ASC
+    `;
+
+  } else {
+
+    throw new Error("Rol inválido");
+
+  }
+
+  const [rows] = await pool.execute(sql, params);
+
+  return rows;
+
+};

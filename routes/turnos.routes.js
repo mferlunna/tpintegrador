@@ -1,6 +1,7 @@
 import express from "express";
 import {
   crearTurno,
+  reservarTurno,
   listarTurnos,
   eliminarTurno,
   agendaSemanal,
@@ -10,6 +11,8 @@ import {
 
 import { verificarToken } from "../src/middlewares/auth.middleware.js";
 import { verificarRol } from "../src/middlewares/roles.middleware.js";
+import { body } from "express-validator";
+import { validarCampos } from "../src/middlewares/validarCampos.middleware.js";
 
 const router = express.Router();
 
@@ -41,6 +44,24 @@ router.get("/", verificarToken, verificarRol([3]), listarTurnos);
  *       - bearerAuth: []
  */
 router.post("/", verificarToken, verificarRol([3]), crearTurno);
+
+router.post("/reservar", verificarToken, verificarRol([2]),
+  [
+    body("id_medico")
+      .isInt()
+      .withMessage("Médico inválido"),
+
+    body("id_obra_social")
+      .isInt()
+      .withMessage("Obra social inválida"),
+
+    body("fecha_hora")
+      .notEmpty()
+      .withMessage("La fecha es obligatoria"),
+  ],
+  validarCampos,
+  reservarTurno
+);
 
 /**
  * @swagger

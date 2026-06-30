@@ -1,6 +1,7 @@
 import {
   crearTurnoService,
   obtenerTurnosService,
+  obtenerMisTurnosService,
   eliminarTurnoService,
   agendaSemanalService,
   marcarTurnoAtendidoService
@@ -33,6 +34,40 @@ export const crearTurno = async (req, res) => {
       estado: false,
       mensaje: error.message
     });
+  }
+};
+
+export const reservarTurno = async (req, res) => {
+  try {
+
+    const {
+      id_medico,
+      id_obra_social,
+      fecha_hora
+    } = req.body;
+
+    const id_paciente = req.usuario.id;
+
+    const result = await crearTurnoService(
+      id_medico,
+      id_paciente,
+      id_obra_social,
+      fecha_hora
+    );
+
+    return res.status(201).json({
+      estado: true,
+      mensaje: "Reserva creada correctamente",
+      id: result.insertId
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+      estado: false,
+      mensaje: error.message
+    });
+
   }
 };
 

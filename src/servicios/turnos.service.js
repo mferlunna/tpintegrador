@@ -8,7 +8,8 @@ import {
   eliminarTurnoRepository,
   marcarTurnoAtendidoRepository,
   obtenerMedicoRepository,
-  obtenerObraSocialRepository
+  obtenerObraSocialRepository,
+  obtenerMisTurnosRepository
 } from "../repositorios/turnos.repository.js";
 
 const DURACION_MINUTOS = 40;
@@ -132,4 +133,8 @@ export const eliminarTurnoService = async (id) => {
 
 export const marcarTurnoAtendidoService = async (id) => {
   return await marcarTurnoAtendidoRepository(id);
+};
+
+export const obtenerMisTurnosService = async (idUsuario, rol) => {
+return await obtenerMisTurnosRepository(idUsuario, rol);
 };
